@@ -1,0 +1,13 @@
+services:
+  node:
+    image: node:24
+    volumes:
+      - .:/opt/project
+      - node_modules:/opt/project/node_modules
+    working_dir: /opt/project
+    ports:
+      - "3000:3000"
+    tty: true
+
+volumes:
+  node_modules:
