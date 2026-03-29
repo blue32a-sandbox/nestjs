@@ -3,6 +3,7 @@
   "dockerComposeFile": ["../compose.yaml"],
   "service": "node",
   "workspaceFolder": "/opt/project",
+  "postCreateCommand": "npm i -g @nestjs/cli",
   "customizations": {
     "vscode": {
       "extensions": [
