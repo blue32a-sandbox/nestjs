@@ -13,9 +13,17 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
+  /**
+   * 依存注入
+   * @see https://docs.nestjs.com/providers#dependency-injection
+   */
+  constructor(private catsService: CatsService) {}
+
   /**
    *ステータスコード、レスポンスヘッダー、リクエストペイロード
    * @see https://docs.nestjs.com/controllers#status-code
@@ -25,8 +33,13 @@ export class CatsController {
   @Post()
   @HttpCode(204) // 201 -> 204
   @Header('Cache-Control', 'no-store')
-  create(@Body() createCatDto: CreateCatDto): string {
-    return 'This action adds a new cat';
+  create(@Body() createCatDto: CreateCatDto): void {
+    this.catsService.create(createCatDto);
+  }
+
+  @Get()
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
   }
 
   /**
