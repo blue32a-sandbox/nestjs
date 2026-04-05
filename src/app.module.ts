@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsController } from './cats/cats.controller';
@@ -8,6 +13,7 @@ import { CatsService } from './cats/cats.service';
 import { CatsModule } from './cats/cats.module';
 import { DatabaseModule } from './database/database.module';
 import { User } from './users/entities/user.entity';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   /**
@@ -49,4 +55,19 @@ import { User } from './users/entities/user.entity';
    */
   providers: [AppService, CatsService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  /**
+   * ミドルウェアコンシューマーの設定
+   * @see https://docs.nestjs.com/middleware#middleware-consumer
+   */
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .exclude(
+        { path: 'cats', method: RequestMethod.GET },
+        { path: 'cats', method: RequestMethod.POST },
+        'cats/wildcards/{*path}',
+      )
+      .forRoutes(CatsController);
+  }
+}
